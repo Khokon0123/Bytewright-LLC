@@ -1,0 +1,389 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────
+   ByteWright design tokens
+   Dark is the default. Light is opt-in via [data-theme="light"].
+   95% monochrome; blue is reserved for CTA, link hover, wordmark.
+   ────────────────────────────────────────────────────────────── */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+/* input-based variants — design for the pointer, not the width */
+@custom-variant touch {
+  @media (hover: none) {
+    @slot;
+  }
+  @media (pointer: coarse) {
+    @slot;
+  }
+}
+@custom-variant can-hover (@media (hover: hover) and (pointer: fine));
+/* phones in landscape and other short screens */
+@custom-variant short (@media (max-height: 33.75rem) and (orientation: landscape));
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0b0c;          /* warm near-black, never #000 */
+  --bg-raised: #131314;   /* image placeholders, form fields */
+  --fg: #edebe7;          /* off-white ink — 16.5:1 */
+  --fg-muted: #8c8983;    /* secondary copy — 5.6:1 (AA) */
+  --fg-faint: #7c7973;    /* tertiary: numbers, status — 4.5:1 (AA) */
+  --line: rgb(237 235 231 / 0.12);
+  --line-strong: rgb(237 235 231 / 0.24);
+  --accent: #4f8ef7;      /* brand blue */
+  --accent-ink: #4f8ef7;  /* blue used as text — 6.1:1 on dark */
+  --on-accent: #0b0b0c;   /* text on blue fill — 6.1:1 */
+  --selection: rgb(79 142 247 / 0.35);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f2ee;          /* warm paper */
+  --bg-raised: #ebe8e2;
+  --fg: #111110;          /* 16.9:1 */
+  --fg-muted: #5f5c56;    /* 6.0:1 */
+  --fg-faint: #726e67;    /* 4.5:1 (AA) */
+  --line: rgb(17 17 16 / 0.12);
+  --line-strong: rgb(17 17 16 / 0.24);
+  --accent: #4f8ef7;
+  --accent-ink: #2a62c9;  /* brand blue fails as text on paper (2.9:1); this is 5.1:1 */
+  --on-accent: #0b0b0c;
+  --selection: rgb(79 142 247 / 0.28);
+}
+
+@theme inline {
+  /* colour */
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-faint: var(--fg-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+
+  /* type families */
+  --font-sans: var(--font-switzer), "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+@theme {
+  /* fluid type scale — 375px → 1600px */
+  --text-display: clamp(3.875rem, 2.2rem + 7vw, 11rem);        /* hero: 62px @360 → ~9.4vw @1440 */
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.045em;
+  --text-h1: clamp(2.75rem, 1.5rem + 5vw, 6.5rem);           /* page titles, closing CTA */
+  --text-h1--line-height: 0.98;
+  --text-h1--letter-spacing: -0.035em;
+  --text-h2: clamp(2rem, 1.3rem + 2.8vw, 4rem);              /* section headlines */
+  --text-h2--line-height: 1.02;
+  --text-h2--letter-spacing: -0.03em;
+  --text-h3: clamp(1.375rem, 1.1rem + 1vw, 2rem);            /* project titles, pillars */
+  --text-h3--line-height: 1.1;
+  --text-h3--letter-spacing: -0.02em;
+  --text-lead: clamp(1.125rem, 1rem + 0.5vw, 1.4375rem);     /* hero support line */
+  --text-lead--line-height: 1.45;
+  --text-body: clamp(1.0625rem, 1rem + 0.15vw, 1.125rem);    /* 17 → 18px */
+  --text-body--line-height: 1.6;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.55;
+  --text-label: 0.875rem;                                    /* labels, nav, metadata: 14px */
+  --text-label--line-height: 1.45;
+
+  /* layout */
+  --spacing-gutter: clamp(1.25rem, 0.6rem + 3vw, 3.5rem);    /* page side margin */
+  --spacing-grid: clamp(1rem, 0.6rem + 1.2vw, 1.75rem);      /* column gap */
+  --spacing-section: clamp(7rem, 3rem + 10vw, 13rem);        /* 160px+ from ~1100px up */
+  --container-page: 100rem;                                   /* 1600px */
+
+  /* motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --duration-fast: 200ms;
+  --duration-base: 600ms;
+  --duration-slow: 1000ms;
+}
+
+/* ── base ───────────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    font-weight: 400;
+    font-feature-settings: "ss01" on, "cv11" on;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 {
+    font-weight: 500;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--selection);
+    color: var(--fg);
+  }
+  /* visible, on-brand focus — never removed */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  a {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  /* 16px minimum stops iOS Safari zooming into fields */
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1rem);
+  }
+  /* touch: replace the grey flash with our own pressed state */
+  @media (hover: none), (pointer: coarse) {
+    a,
+    button,
+    summary,
+    [role="button"] {
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 150ms ease;
+    }
+    a:active,
+    button:active,
+    summary:active {
+      opacity: 0.6;
+      transition-duration: 0ms;
+    }
+  }
+}
+
+/* ── primitives ─────────────────────────────────────────────── */
+
+/* gutters never smaller than the notch / rounded corners in landscape */
+@utility page-x {
+  padding-left: max(var(--spacing-gutter), env(safe-area-inset-left));
+  padding-right: max(var(--spacing-gutter), env(safe-area-inset-right));
+}
+
+/* 44×44 minimum hit area on touch screens; no visual change with a mouse */
+@utility tap {
+  @media (hover: none), (pointer: coarse) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 12-col on desktop, 6-col on tablet, 4-col on mobile */
+@utility grid-page {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--spacing-grid);
+  @media (width >= 48rem) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  @media (width >= 64rem) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+/* Labels, nav items, metadata. Switzer, sentence case, never tracked out or uppercased. */
+@utility label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--fg-muted);
+}
+
+/* Numbers only (01, 02, years, counts). The one place mono appears. */
+@utility num {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem; /* 13px mono sits level with 14px Switzer */
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A real link: ink, underline appears on hover/focus. Used for every email address. */
+@utility link {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: transparent;
+  transition:
+    text-decoration-color 200ms ease,
+    color 200ms ease;
+  &:hover,
+  &:focus-visible {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* the one italic word */
+@utility em-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  /* Instrument Serif sits optically small next to Switzer */
+  font-size: 1.06em;
+}
+
+@utility hairline {
+  border-color: var(--line);
+}
+
+/* ── motion safety ──────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── reveal system ──────────────────────────────────────────────
+   Start states in CSS; one IntersectionObserver plays the motion (WAAPI).
+   No JS → everything visible (html lacks .js). Reduced motion → static.
+   ────────────────────────────────────────────────────────────── */
+
+.reveal-line {
+  display: block;
+  overflow: hidden;
+  /* room for ascenders, italic overhang and descenders inside the mask */
+  padding: 0.1em 0.08em 0.14em;
+  margin: -0.1em -0.08em -0.14em;
+}
+.reveal-line > span {
+  display: block;
+}
+
+/* start states only — <RevealObserver /> plays the motion with the Web Animations API */
+.js [data-reveal="lines"] .reveal-line > span {
+  transform: translate3d(0, 112%, 0);
+}
+.js [data-reveal="fade"] {
+  opacity: 0;
+  transform: translate3d(0, 1.5rem, 0);
+}
+
+/* Hero: CSS keyframes start at first paint — no wait for hydration (LCP). */
+@keyframes rise-line {
+  from { transform: translate3d(0, 112%, 0); }
+}
+@keyframes rise-fade {
+  from { opacity: 0; transform: translate3d(0, 1.5rem, 0); }
+}
+[data-reveal="lines-now"] .reveal-line > span {
+  animation: rise-line 1000ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 90ms);
+}
+[data-reveal="fade-now"] {
+  animation: rise-fade 1000ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+/* Rise without fading: stays opaque, so it counts as painted on the first frame (LCP). */
+@keyframes rise {
+  from { transform: translate3d(0, 1.25rem, 0); }
+}
+[data-reveal="rise-now"] {
+  animation: rise 1100ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal="lines-now"] .reveal-line > span,
+  [data-reveal="fade-now"],
+  [data-reveal="rise-now"] {
+    animation: none;
+  }
+  .js [data-reveal] .reveal-line > span,
+  .js [data-reveal="fade"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── marquee ─────────────────────────────────────────────────── */
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee-track {
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* ── work media ──────────────────────────────────────────────── */
+
+.work-media img,
+.work-media .work-media-inner {
+  transition: transform 1200ms var(--ease-out-expo);
+  transform-origin: 50% 60%;
+}
+@media (hover: hover) and (pointer: fine) {
+  .work-card:hover .work-media img,
+  .work-card:hover .work-media .work-media-inner {
+    transform: scale(1.04) translate3d(0, -1.2%, 0);
+  }
+}
+
+/* touch equivalent of the hover zoom: a small press-in on tap */
+@media (hover: none), (pointer: coarse) {
+  .work-card:active .work-media img,
+  .work-card:active .work-media .work-media-inner {
+    transform: scale(0.985);
+    transition-duration: 200ms;
+  }
+}
+
+/* cursor label only exists for fine pointers */
+@media not ((hover: hover) and (pointer: fine)) {
+  .view-cursor {
+    display: none;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
