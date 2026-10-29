@@ -27,6 +27,7 @@
   --bg: #0b0b0c;          /* warm near-black, never #000 */
   --bg-raised: #131314;   /* image placeholders, form fields */
   --fg: #edebe7;          /* off-white ink — 16.5:1 */
+  --fg-soft: #b3b0aa;     /* lead copy, between ink and muted: 9.1:1 */
   --fg-muted: #8c8983;    /* secondary copy — 5.6:1 (AA) */
   --fg-faint: #7c7973;    /* tertiary: numbers, status — 4.5:1 (AA) */
   --line: rgb(237 235 231 / 0.12);
@@ -42,6 +43,7 @@
   --bg: #f4f2ee;          /* warm paper */
   --bg-raised: #ebe8e2;
   --fg: #111110;          /* 16.9:1 */
+  --fg-soft: #45423d;     /* 9.0:1 */
   --fg-muted: #5f5c56;    /* 6.0:1 */
   --fg-faint: #726e67;    /* 4.5:1 (AA) */
   --line: rgb(17 17 16 / 0.12);
@@ -57,6 +59,7 @@
   --color-bg: var(--bg);
   --color-bg-raised: var(--bg-raised);
   --color-fg: var(--fg);
+  --color-soft: var(--fg-soft);
   --color-muted: var(--fg-muted);
   --color-faint: var(--fg-faint);
   --color-line: var(--line);
@@ -387,3 +390,22 @@ html.lenis body {
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
 }
+
+/* ── hero object ("The Byte") ───────────────────────────────── */
+
+:root,
+[data-theme="dark"] {
+  --hero-glow: rgb(237 235 231 / 0.075);
+}
+[data-theme="light"] {
+  --hero-glow: rgb(17 17 16 / 0.05);
+}
+/* a very soft pool of light behind the object; must match the glow baked into the phone video */
+.byte-glow {
+  background: radial-gradient(closest-side at 50% 46%, var(--hero-glow), transparent);
+}
+/* the video's edges fade out so compression never draws a visible square */
+.byte-video {
+  mask-image: radial-gradient(closest-side, #000 78%, transparent);
+}
+

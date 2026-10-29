@@ -48,7 +48,7 @@ export function RevealObserver() {
           play(e.target as HTMLElement);
         }
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.01 },
+      { rootMargin: "0px 0px -4% 0px", threshold: 0.01 },
     );
     const scan = () =>
       document.querySelectorAll(SELECTOR).forEach((el) => {

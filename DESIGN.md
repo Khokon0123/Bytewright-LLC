@@ -184,3 +184,74 @@ The "number, rule, label" opener (`04 —— In their words`) and its relatives 
   their arrow, numbers, dash bullets and "UI/UX" tag; the includes are now one plain sentence in sentence case. The marquee
   separates items with space and alternating tone instead of serif slashes (which broke the one-serif-word rule).
   Services no longer ends with two calls to action in a row. Share images dropped their rule.
+
+---
+
+# Hero object: "The Byte" (revision 4)
+
+Replaces the project card stack (the projects live in the featured work section directly below).
+
+## The object
+Eight cubes in a 2×2×2 block: 8 bits, 1 byte, a nod to the name. Matte near-black (#151517), roughness ~0.75 with a fine
+grain (procedural roughness + bump map, fixed seed), rounded edges (radius 0.07). Not glossy, not glassy.
+
+## Light
+- One soft warm key light from the top-left (spot, full penumbra, long falloff).
+- A thin rim in brand blue (#4F8EF7) from directly behind the object relative to the camera, so only silhouette edges
+  catch it. Nothing neon.
+- A small in-scene light environment (one softbox, one thin blue strip, 64px, no HDR download) for the soft
+  highlights on the rounded edges.
+- A faint floor glow and a soft baked contact shadow (radial textures). No real-time shadow maps: no hard plane edges,
+  no shadow pass per frame.
+- CSS: a very soft radial light behind the canvas (`.byte-glow`, `--hero-glow`) so the right side isn't flat black.
+
+## Motion (src/components/byte/timeline.ts)
+One pure function of time drives everything, so the live canvas, the still and the phone video are the same motion.
+Slow constant turn (7.5°/s). Every 6 s the block opens slightly, the top ring of four steps one slot clockwise while the
+bottom ring steps the other way, each cube turns a quarter, and everything settles back with a spring overshoot.
+After 12 s the object looks identical to the start: the video's seamless loop length. On desktop the whole object
+tilts gently toward the cursor (±0.18 rad, eased).
+
+## Loading strategy
+| Visitor | What they get |
+|---|---|
+| Everyone, instantly | The still (`public/hero/byte.webp`, transparent, rendered from the scene at t=0), preloaded |
+| Desktop with a mouse | The live canvas, loaded on the first mouse move, scroll, touch or key press, then faded in over the still once shaders have compiled (`compileAsync`) and the first frame is drawn |
+| Phones and tablets, dark theme | A 12 s seamless video loop (`public/hero/byte-loop.mp4`, 720², 410KB), plays only while on screen |
+| Reduced motion, light-theme touch devices, no WebGL | The still only |
+
+Rendering stops when the hero is off screen; device pixel ratio is capped at 2. `?byte=live|video|still` forces a
+mode for QA. three.js + R3F + drei load only on the desktop live path (code-split, ~260KB gzipped).
+
+## Re-rendering the still and video
+`npm run dev`, then `/lab/byte` (development only; 404 in production) exposes `window.__byteSetTime(t)`. The still is
+t=0 at 1200²; the video is 360 frames (t = 0…11.97 s at 30fps) at 720² composited over the same glow as `.byte-glow`
+and encoded with H.264 (crf 26, faststart).
+
+## Performance (production build, Lighthouse 12)
+- Desktop, as shipped: 100 / 100 / 100 / 100 (TBT 0–10ms).
+- Mobile, as shipped: 94–98 / 100 / 100 / 100.
+- Desktop with the 3D forced to load during the audit: 68–70, almost all from one long task when the scene first
+  renders. Measured in a headless browser with software WebGL (no GPU), which makes shader compilation and the light
+  environment far slower than on real hardware; check the real cost on a laptop in Chrome DevTools › Performance.
+
+---
+
+# Hero composition (revision 3)
+
+- **Desktop (≥1280px):** the headline, sentence and actions sit on the left; the three projects sit on the right as a loose
+  stack of cards, tilted a few degrees and overlapping like prints on a desk. Back cards are dimmed slightly.
+  Hover lifts a card 14px. Dragging a card more than 90px shuffles the stack (the front card goes to the back, a back card
+  comes to the front); a click (under 5px of movement) opens the case study. Drag exists only for mouse and trackpad;
+  touch and keyboard simply open the links. Built with pointer events and CSS transitions, so the hero ships no
+  animation library. Cards are image-only: captions peeking from behind other cards read as clutter. Missing screenshots
+  show a neutral card with the project name in the bottom-right corner, the one corner visible in every slot.
+- **Tablet and phone:** the same text, then a native, snap-scrolling row of the three projects below the buttons. The next
+  card peeks in from the edge, which says "swipe" without a label. No JavaScript.
+- **Paragraph colour:** new `--fg-soft` token (#B3B0AA dark, 9.1:1 · #45423D light, 9.0:1), between ink and muted.
+- **Height:** the hero is sized to its content, so the work section's headline shows at the bottom of a 1440×900 (and
+  1280×800) screen. Scroll reveals now trigger 4% above the bottom of the viewport (was 12%) so that peek is visible.
+- **Motion:** cards are dealt in once on load (1.1s, staggered). With reduced motion: no deal-in, no lift, no transitions;
+  shuffling still works, instantly.
+- **Performance:** only the front screenshot is preloaded (the same 640w file serves the phone row and the desktop
+  stack). Desktop Lighthouse stays at 100; mobile performance is 91–95 now that the first screen holds an image.
