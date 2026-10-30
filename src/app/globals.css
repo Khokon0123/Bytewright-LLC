@@ -25,7 +25,11 @@
 [data-theme="dark"] {
   color-scheme: dark;
   --bg: #0b0b0c;          /* warm near-black, never #000 */
-  --bg-raised: #131314;   /* image placeholders, form fields */
+  --bg-raised: #131314;   /* image placeholders, form fields, the header pill */
+  --bg-tile: #19191c;     /* logo tiles, feature cards: one step above the page */
+  --mock: #1c1c1f;        /* surfaces inside the code-built mockups */
+  --mock-line: rgb(237 235 231 / 0.08);
+  --glow: rgb(79 142 247 / 0.16); /* the one permitted glow: a feature card's corner */
   --fg: #edebe7;          /* off-white ink — 16.5:1 */
   --fg-soft: #b3b0aa;     /* lead copy, between ink and muted: 9.1:1 */
   --fg-muted: #8c8983;    /* secondary copy — 5.6:1 (AA) */
@@ -42,6 +46,10 @@
   color-scheme: light;
   --bg: #f4f2ee;          /* warm paper */
   --bg-raised: #ebe8e2;
+  --bg-tile: #ebe8e2;
+  --mock: #faf9f6;
+  --mock-line: rgb(17 17 16 / 0.08);
+  --glow: rgb(79 142 247 / 0.14);
   --fg: #111110;          /* 16.9:1 */
   --fg-soft: #45423d;     /* 9.0:1 */
   --fg-muted: #5f5c56;    /* 6.0:1 */
@@ -58,6 +66,9 @@
   /* colour */
   --color-bg: var(--bg);
   --color-bg-raised: var(--bg-raised);
+  --color-bg-tile: var(--bg-tile);
+  --color-mock: var(--mock);
+  --color-mock-line: var(--mock-line);
   --color-fg: var(--fg);
   --color-soft: var(--fg-soft);
   --color-muted: var(--fg-muted);
@@ -347,6 +358,92 @@
   .marquee-track {
     animation: none;
   }
+}
+
+/* ── logo marquee: faded edges via mask, pauses on hover ───────── */
+
+.logo-marquee {
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  /* no scroll: the row wraps into a still grid instead */
+  .logo-marquee {
+    mask-image: none;
+  }
+  .logo-marquee .marquee-track {
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .logo-marquee [aria-hidden="true"] {
+    display: none;
+  }
+  .logo-marquee ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.75rem;
+  }
+}
+
+/* ── feature cards ─────────────────────────────────────────────
+   Dark card, one soft blue glow from a corner. The glow is the only
+   gradient on the site and lives only here. */
+
+.feature-card {
+  background:
+    radial-gradient(70% 60% at var(--glow-x, 100%) 0%, var(--glow), transparent 70%),
+    var(--bg-tile);
+}
+
+/* Mockup steps. Default markup is the finished state (no-JS, reduced motion).
+   JS sets data-step; each part shows once data-step reaches its own --at. */
+.mock [data-at] {
+  transition:
+    opacity 600ms var(--ease-out-expo),
+    transform 800ms var(--ease-out-expo),
+    clip-path 900ms var(--ease-out-expo);
+}
+.mock [data-at][data-off] {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.mock [data-at][data-off="slide"] {
+  opacity: 1;
+  transform: translateX(104%);
+}
+.mock [data-at][data-off="grow"] {
+  transform: scaleX(0.2);
+}
+.mock-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 2200ms cubic-bezier(0.45, 0, 0.2, 1);
+}
+.mock-draw[data-off] {
+  stroke-dashoffset: 1;
+}
+@keyframes mock-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+}
+.mock-in {
+  animation: mock-in 500ms var(--ease-out-expo) both;
+  transform-origin: bottom left;
+}
+@keyframes mock-dot {
+  0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+.mock-typing span {
+  animation: mock-dot 1s ease-in-out infinite;
+}
+.mock-typing span:nth-child(2) { animation-delay: 150ms; }
+.mock-typing span:nth-child(3) { animation-delay: 300ms; }
+@keyframes mock-ping {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+.mock-ping {
+  animation: mock-ping 1.4s ease-out 2;
 }
 
 /* ── work media ──────────────────────────────────────────────── */

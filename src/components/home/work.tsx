@@ -28,9 +28,8 @@ function Card({
           <span className="num pt-[0.45em] text-faint">{project.n}</span>
           <div>
             <h3 className="text-h3 transition-colors duration-300 group-hover:text-accent-ink">{project.title}</h3>
-            <p className="mt-2 max-w-[48ch] text-muted">{project.summary}</p>
           </div>
-          <p className={`label col-start-2 mt-4 ${wide ? "md:col-start-3 md:mt-[0.45em] md:text-right" : ""}`}>
+          <p className={`label col-start-2 mt-2 ${wide ? "md:col-start-3 md:mt-[0.45em] md:text-right" : ""}`}>
             {project.kind}
             <span className={`whitespace-nowrap text-faint ${wide ? "mt-1 block" : "before:mx-2 before:content-['·']"}`}>
               <span className="num">5</span>-star review
@@ -49,7 +48,7 @@ function Card({
 export function Work() {
   const [a, b, c] = projects;
   return (
-    <section id="work" className="page-x mx-auto max-w-page scroll-mt-24 pt-24 md:pt-32" aria-labelledby="work-title">
+    <section id="work" className="page-x mx-auto max-w-page scroll-mt-24 pt-section" aria-labelledby="work-title">
       <SectionHead
         id="work-title"
         lines={[

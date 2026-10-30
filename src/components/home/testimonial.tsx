@@ -21,10 +21,7 @@ export function Testimonial() {
           className="col-span-4 flex flex-col items-start justify-end md:col-span-4 md:col-start-3 lg:col-span-5 lg:col-start-8 xl:col-span-4 xl:col-start-9"
         >
           <h2 className="text-h3">Prefer to talk first?</h2>
-          <p className="mt-4 text-muted">
-            Pricing is shaped around each project, so the first step is a short call. No prep needed.
-          </p>
-          <div className="mt-8">
+          <div className="mt-6">
             <Button href="/contact">Book a 30-minute intro call</Button>
           </div>
         </Reveal>

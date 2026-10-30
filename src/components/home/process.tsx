@@ -6,22 +6,22 @@ const steps = [
   {
     n: "1",
     title: "Discover",
-    body: "We learn your goals, your users, and your constraints, then agree on what success looks like. You get a clear scope before any design starts.",
+    body: "Goals, users, and a clear scope.",
   },
   {
     n: "2",
     title: "Design",
-    body: "Flows and wireframes first, then real interface design. You see it working in the browser early, not in a slide deck at the end.",
+    body: "Real screens in the browser, early.",
   },
   {
     n: "3",
     title: "Build",
-    body: "Production code, shipped in small pieces you can review as we go. No black box, no big reveal.",
+    body: "Shipped in small pieces you review.",
   },
   {
     n: "4",
     title: "Launch & support",
-    body: "We launch, measure, and stay on for fixes, updates, and whatever comes next.",
+    body: "We stay on after launch.",
   },
 ];
 
@@ -45,7 +45,7 @@ export function Process() {
               </span>
               {s.title}
             </h3>
-            <p className="mt-4 max-w-[34ch] text-muted">{s.body}</p>
+            <p className="mt-3 max-w-[30ch] text-muted">{s.body}</p>
           </Reveal>
         ))}
       </ol>

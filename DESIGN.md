@@ -49,7 +49,7 @@ Lenis and the marquee turn off. No parallax for its own sake, no bounce, no scro
 ## Decisions made without asking
 - Only Switzer 400/500 ship (about 37KB in total). No italic Switzer, since emphasis is the serif's job.
 - CTA wording site-wide: **"Start a project"**.
-- The CTA is the only rounded element (pill). Everything else is square-edged.
+- The CTA is the only rounded element (pill). Everything else is square-edged. *(Superseded in Revision 5: rounded tiles, cards and the header pill.)*
 - Theme preference is saved per visitor and applied before paint, so there's no flash.
 - `/system` is a living style guide set to `noindex`.
 
@@ -255,3 +255,48 @@ and encoded with H.264 (crf 26, faststart).
   shuffling still works, instantly.
 - **Performance:** only the front screenshot is preloaded (the same 640w file serves the phone row and the desktop
   stack). Desktop Lighthouse stays at 100; mobile performance is 91–95 now that the first screen holds an image.
+
+
+---
+
+# Revision 5 — Cleaner, less text (reference: joinhandshake.com)
+
+The black theme, type and hero are unchanged. Three ideas borrowed, everything else trimmed.
+
+## Text diet
+- Every homepage section is one short headline plus at most one or two short lines. Visuals carry the rest.
+- Cut: work-card summaries (title, kind and "5-star review" remain), the services intro paragraph, each pillar's
+  includes/design paragraph, the long process step bodies (now one short line each), the "pricing is shaped…" line
+  under "Prefer to talk first?".
+- The service-name marquee left the homepage (the logo marquee and feature sections replace it). It stays on /services,
+  which is where the long detail lives.
+
+## Logo marquee (below the hero)
+- Label "Built with the tools we trust", then Next.js, React, Swift, Python, AWS, Supabase, Stripe, OpenAI, Claude, Figma.
+- Official marks from simple-icons (CC0), `src/lib/logos.ts`, all `currentColor` in `--fg-muted`. The name sits next to each mark
+  in the same gray, because several marks (Claude, OpenAI, Supabase) aren't recognisable to non-developer clients on their own.
+- Tiles: 144px, 176px and 208px wide (phone, tablet, desktop), mark centered with the name under it, no fill: the logos sit straight on the black page. Label sits left with a small blue dot. ~70s per loop, pauses on hover,
+  edges faded with a mask (not a painted gradient). Reduced motion: no scroll; the tiles wrap into a centered still grid.
+
+## Service pillars as feature sections
+- Text side: headline (one serif word), one line in `text-soft`, a text link to `/services#slug`. Card side: 7 of 12 columns.
+- Cards alternate right, left, right, left. On phones and tablets the card stacks under the text.
+- Card: `--bg-tile`, 1px hairline, 28→32px radius, a soft brand-blue radial (`--glow`, 16% alpha) from the top corner on the
+  outer side. This is the only gradient on the site.
+- Mockups are code, not images (`src/components/home/mockups/`):
+  - **Websites:** a browser window; nav, hero, image tiles and footer assemble in four steps.
+  - **Apps & Products:** a phone; the list fades in, one row is tapped, the detail screen slides in, its button appears.
+  - **AI & Automation:** a support chat; customer message, typing dots, answer, reply, typing, answer.
+  - **Infrastructure & Support:** stat tiles rise, the line chart draws itself, status flips from "Checking…" to a green
+    "All systems normal" with two soft pings. The figures are illustrative UI, not claims.
+- `useSequence` plays each one once, the first time 40% is in view. Server render, no-JS and reduced motion all get the
+  finished state; state lives in React, so nothing mutates React-owned attributes.
+
+## Navigation
+- At the top: the full-width bar as before. Past 24px of scroll it eases into a floating pill: centered, max 70rem, 12px
+  from the top, solid `--bg-raised` (#131314), 1px `--line`, a soft drop shadow. No blur, no translucency.
+- It no longer hides on scroll down: the pill is small enough to stay. With the mobile menu open it returns to the bar.
+
+## Rules updated
+- Rounded only where it holds something: CTA and header pills, 28–32px feature cards. Logos sit on the page, no tiles.
+- One glow, one place: feature-card corners. Still no other gradients, glass or blur.

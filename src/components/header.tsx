@@ -24,19 +24,12 @@ function setPageInert(inert: boolean) {
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const lastY = useRef(0);
   const menuButton = useRef<HTMLButtonElement>(null);
 
-  // hide on scroll down, return on scroll up
+  // past the first few pixels the bar condenses into a floating pill
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 8);
-      setHidden(y > 160 && y > lastY.current);
-      lastY.current = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -72,6 +65,8 @@ export function Header() {
     };
   }, [open]);
 
+  const pill = scrolled && !open;
+
   const close = (refocus: boolean) => {
     setOpen(false);
     if (refocus) menuButton.current?.focus();
@@ -80,11 +75,16 @@ export function Header() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top)] transition-[transform,background-color,border-color] duration-500 ease-out-expo ${
-          hidden && !open ? "-translate-y-full" : "translate-y-0"
-        } border-b ${scrolled || open ? "bg-bg" : ""} ${scrolled && !open ? "border-line" : "border-transparent"}`}
+        className={`fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top)] transition-[background-color] duration-500 ${open ? "bg-bg" : ""}`}
       >
-        <div className="page-x mx-auto flex h-16 max-w-page items-center justify-between gap-6 md:h-20 short:h-16">
+        {/* Bar at the top of the page; a solid pill with a hairline once scrolled. Solid, never blurred. */}
+        <div
+          className={`mx-auto flex items-center justify-between gap-6 border transition-[max-width,height,margin,padding,border-radius,background-color,border-color] duration-500 ease-out-expo ${
+            pill
+              ? "mt-3 h-14 max-w-[min(70rem,calc(100%-1.5rem-env(safe-area-inset-left)-env(safe-area-inset-right)))] rounded-[1.75rem] border-line bg-bg-raised pr-2 pl-5 md:pr-2.5 md:pl-6 shadow-[0_12px_32px_-16px_rgb(0_0_0/0.5)]"
+              : "page-x mt-0 h-16 max-w-page rounded-[0px] border-transparent md:h-20 short:h-16"
+          }`}
+        >
           <Link href="/" className="tap relative z-10 text-[1.3125rem] leading-none" aria-label="ByteWright, home">
             <Wordmark />
           </Link>
@@ -120,7 +120,7 @@ export function Header() {
             <button
               ref={menuButton}
               type="button"
-              className="tap label -mr-2 justify-center px-2 font-medium !text-fg lg:hidden"
+              className={`tap label justify-center px-2 font-medium !text-fg lg:hidden ${pill ? "mr-1" : "-mr-2"}`}
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}

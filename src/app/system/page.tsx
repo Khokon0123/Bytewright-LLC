@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/button";
 import { site } from "@/lib/site";
+import { toolLogos } from "@/lib/logos";
+import { ChatMock } from "@/components/home/mockups/chat";
 
 export const metadata: Metadata = {
   title: "Design system",
@@ -22,6 +24,9 @@ const colours = [
   { name: "--fg", dark: "#EDEBE7", light: "#111110", use: "Ink. 16.5:1 / 16.9:1." },
   { name: "--fg-muted", dark: "#8C8983", light: "#5F5C56", use: "Secondary copy, labels, nav. AA on both." },
   { name: "--fg-faint", dark: "#7C7973", light: "#726E67", use: "Tertiary: numbers, status. Just AA (4.5:1)." },
+  { name: "--bg-raised", dark: "#131314", light: "#EBE8E2", use: "Header pill, form fields, image placeholders." },
+  { name: "--bg-tile", dark: "#19191C", light: "#EBE8E2", use: "Feature cards. One step above the page." },
+  { name: "--mock", dark: "#1C1C1F", light: "#FAF9F6", use: "Surfaces inside the code-built mockups." },
   { name: "--line", dark: "ink @ 12%", light: "ink @ 12%", use: "Hairlines. Structure without boxes." },
   { name: "--accent", dark: "#4F8EF7", light: "#4F8EF7", use: "CTA fill, ‘Wright’. Nothing else." },
   { name: "--accent-ink", dark: "#4F8EF7", light: "#2A62C9", use: "Link hover text. Deepened on paper for AA." },
@@ -44,6 +49,10 @@ const rules = [
   ["Numbers only when order matters", "The four process steps, the project list, the steps after you get in touch. Nowhere else."],
   ["No em dashes in copy", "Use a period, comma or colon. En dashes stay only in number ranges ($10k – $25k)."],
   ["One serif word per major headline", "Instrument Serif Italic, never a phrase, never body copy."],
+  ["Text diet", "Every homepage section: one short headline and at most one or two short lines. If a visual or the headline already says it, cut the sentence. Detail lives on /services."],
+  ["Visuals explain, built in code", "Service sections show small interface mockups made from tokens, never stock images or illustrations. They play once when scrolled into view; reduced motion and no-JS get the finished frame."],
+  ["Rounded only where it holds something", "Pills for the CTA and the scrolled header; 28–32px cards for mockups. Text sections stay unboxed."],
+  ["One glow, one place", "A soft brand-blue glow from one corner of a feature card, alternating sides. No other gradients, no blur, no glass."],
 ];
 
 export default function SystemPage() {
@@ -150,6 +159,27 @@ export default function SystemPage() {
           </ul>
         </Section>
 
+        <Section title="Surfaces">
+          <p className="max-w-[52ch] text-muted">Header pill, logos on the page, feature card. Solid fills, one hairline, nothing blurred.</p>
+          <div className="mt-10 flex h-14 max-w-xl items-center justify-between rounded-[1.75rem] border border-line bg-bg-raised pr-2 pl-5">
+            <span className="text-fg">ByteWright</span>
+            <span className="flex h-10 items-center rounded-full bg-accent px-4 text-small font-medium text-on-accent">{site.cta} →</span>
+          </div>
+          <ul className="mt-8 flex flex-wrap gap-3">
+            {toolLogos.slice(0, 4).map((l) => (
+              <li key={l.name} className="flex size-36 flex-col items-center justify-center gap-3 text-muted">
+                <svg viewBox="0 0 24 24" className="size-10" fill="currentColor" aria-hidden="true">
+                  <path d={l.path} />
+                </svg>
+                <span className="text-[0.9375rem] font-medium">{l.name}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="feature-card mt-8 grid place-items-center rounded-[2rem] border border-line px-4 py-10 sm:px-10">
+            <ChatMock />
+          </div>
+        </Section>
+
         <Section title="Grid">
           <div className="relative h-56 border-y border-line">
             <div className="grid-page absolute inset-0 !grid-cols-12">
@@ -172,7 +202,9 @@ export default function SystemPage() {
               ["Ease", "Expo-out (0.16, 1, 0.3, 1). Fast start, long soft landing."],
               ["Headlines", "Line-by-line masked rise, 900ms, 80ms stagger, once."],
               ["Work", "Image scales 1 → 1.04 and drifts 1.5%, 1000ms. ‘View’ cursor, desktop only."],
-              ["Smooth scrolling", "Lenis on mouse and trackpad only (touch keeps native scroll). Service marquee at ~70s per loop."],
+              ["Mockups", "Step timelines (useSequence), first time 40% in view, once. Parts rise 10px and fade, screens slide, the chart line draws over 2.2s."],
+              ["Header", "Bar at the top; past 24px it eases (500ms expo) into a centered floating pill: solid #131314, 1px hairline, 12px from the top."],
+              ["Smooth scrolling", "Lenis on mouse and trackpad only (touch keeps native scroll). Logo marquee at ~70s per loop, pauses on hover, wraps into a still grid with reduced motion."],
               ["Reduced motion", "Everything resolves to its end state instantly. Lenis and marquee off."],
               ["Never", "Parallax for its own sake, bounces, spinning, scroll-jacking."],
             ].map(([k, v]) => (

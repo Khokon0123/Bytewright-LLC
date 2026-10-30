@@ -6,8 +6,7 @@ import { Process } from "@/components/home/process";
 import { Testimonial } from "@/components/home/testimonial";
 import { Insights } from "@/components/home/insights";
 import { Closing } from "@/components/home/closing";
-import { Marquee } from "@/components/marquee";
-import { marqueeItems } from "@/lib/services";
+import { LogoMarquee } from "@/components/home/logo-marquee";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -21,10 +20,8 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <LogoMarquee />
       <Work />
-      <div className="pt-section">
-        <Marquee items={marqueeItems} />
-      </div>
       <Pillars />
       <Process />
       <Testimonial />
